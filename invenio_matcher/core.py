@@ -40,7 +40,7 @@ def execute(index, doc_type, query, record, **kwargs):
     """Parse a query and send it to the engine, returning a list of hits."""
     _type, match, values, extras = _parse(query, record)
 
-    if not values:
+    if not values and not _is_fuzzy_with_doc(query):
         # No values in the record to match with
         return []
 
@@ -67,6 +67,10 @@ def get_queries(index, doc_type, **kwargs):
         raise NoQueryDefined('No query defined for index {index} and doc_type'
                              ' {doc_type} in MATCHER_QUERIES.'.format(
                                  index=index, doc_type=doc_type))
+
+
+def _is_fuzzy_with_doc(query):
+    return query['type'] == 'fuzzy' and bool(query.get('doc'))
 
 
 def _build_result(hits):

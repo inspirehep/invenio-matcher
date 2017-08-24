@@ -191,6 +191,20 @@ def test_parse_simple_query(app, simple_record):
         assert extras == {}
 
 
+def test_parse_query_does_not_raise_with_broken_values(app):
+    """Parse a query accepting broken values."""
+    with app.app_context():
+        query = {'type': 'exact', 'match': 'dois.value.raw'}
+        record = Record({'dois': [{'source': 'Springer', 'value': '10.1007/s00006-015-0540-2'}]})
+
+        _type, match, values, extras = _parse(query, record)
+
+        assert _type == 'exact'
+        assert match == 'dois.value.raw'
+        assert values == []
+        assert extras == {}
+
+
 def test_parse_query_with_with(app, simple_record):
     """Parse a query with the 'with' keyword."""
     with app.app_context():
